@@ -1,0 +1,9 @@
+CC = gcc
+CFLAGS = `idris --include` `sdl-config --cflags`
+
+sdlrun.o: sdlrun.c sdlrun.h
+
+clean: .PHONY
+	rm sdlrun.o
+
+.PHONY:

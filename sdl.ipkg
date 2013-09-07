@@ -1,0 +1,8 @@
+package sdl
+
+modules = SDL
+makefile = MakefileSDLC
+
+objs = sdlrun.o
+libs = SDL, SDL_gfx
+
