@@ -1,5 +1,6 @@
 package sdl
 
+sourcedir = src
 modules = Graphics.SDL
 opts = "-p effects" 
 
