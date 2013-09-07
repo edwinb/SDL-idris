@@ -105,6 +105,13 @@ VAL BUTTON(VM* vm, int tag, int b, int x, int y) {
     return event;
 }
 
+VAL RESIZE(VM* vm, int w, int h) {
+    VAL m;
+    idris_constructor(m, vm, 5, 2, 0);
+    idris_setConArg(m, 0, MKINT((intptr_t)w));
+    idris_setConArg(m, 1, MKINT((intptr_t)h));
+    return m;
+}
 VAL KEY(VM* vm, int tag, SDLKey key) {
     VAL k;
 
@@ -247,8 +254,11 @@ void* pollEvent(VM* vm)
             ievent = BUTTON(vm, 4, event.button.button,
                                 event.button.x, event.button.y);
             break;
+        case SDL_VIDEORESIZE:
+            ievent = RESIZE(vm, event.resize.w, event.resize.h);
+            break;
 	case SDL_QUIT:
-	    idris_constructor(ievent, vm, 5, 0, 0);
+	    idris_constructor(ievent, vm, 6, 0, 0);
 	    break;
 	default:
 	    idris_constructor(idris_event, vm, 0, 0, 0); // Nothing

@@ -1,4 +1,4 @@
-module SDL
+module Graphics.SDL
 
 %include C "sdlrun.h"
 %include C "SDL/SDL.h"
@@ -18,6 +18,10 @@ startSDL : Int -> Int -> IO SDLSurface
 startSDL x y = do ptr <- do_startSDL
 		  return (MkSurface ptr)
   where do_startSDL = mkForeign (FFun "startSDL" [FInt, FInt] FPtr) x y
+
+public
+endSDL : IO ()
+endSDL = mkForeign (FFun "SDL_Quit" [] FUnit)
 
 public
 flipBuffers : SDLSurface -> IO ();
@@ -134,6 +138,7 @@ data Event = KeyDown Key
            | MouseMotion Int Int Int Int
            | MouseButtonDown Button Int Int
            | MouseButtonUp Button Int Int
+           | Resize Int Int
 	   | AppQuit
 
 instance Eq Event where
