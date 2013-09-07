@@ -1,5 +1,9 @@
 module Main
 
+{- Test program for SDL effect - draws a rectangle and an ellipse on a
+scrolling starfield background, with the position of the ellipse 
+controlled by the arrow keys -}
+
 import Effects
 
 import Effect.SDL
@@ -7,7 +11,19 @@ import Effect.State
 import Effect.StdIO
 import Effect.Random
 
-data Vars = Position | XMove | YMove | Frames | Starfield
+-- Global variables we'll manage as State effects
+
+data Vars = Position -- position of ellipse
+          | XMove -- movement of ellipse
+          | YMove -- movement of ellipse
+          | Frames -- count of frames so far
+          | Starfield -- position of stars in the background
+
+-- SDL effect is parameterised by an underyling 'surface' resource which
+-- only exists when initialised.
+
+-- The program supports SDL, carries state, and supports random number
+-- generation and console I/O
 
 Prog : Type -> Type -> Type
 Prog i t = Eff IO [SDL i, 
@@ -19,6 +35,7 @@ Prog i t = Eff IO [SDL i,
                    RND,
                    STDIO] t
 
+-- Convenient shorthand for initialised SDL
 Running : Type -> Type
 Running t = Prog SDLSurface t
 
@@ -43,6 +60,10 @@ drawStarfield : List (Int, Int) -> Eff IO [SDL_ON] ()
 drawStarfield [] = return ()
 drawStarfield ((x, y) :: xs) = do line white x y x y
                                   drawStarfield xs
+
+-- Main program - set up SDL, put the ellipse in a starting position,
+-- set up an intiial starfield in random locations, then run an
+-- event loop.
 
 emain : Prog () ()
 emain = do initialise 640 480
@@ -81,21 +102,31 @@ emain = do initialise 640 480
                   drawStarfield s
                   flip
 
-        update : Running ()
-        update = do xm <- XMove :- get
-                    ym <- YMove :- get
-                    (x, y) <- Position :- get
-                    Position :- put (x + xm, y + ym)
-                    f <- Frames :- get
+        -- update the world state by moving the ellipse to a new position
+        -- and scrolling the starfield. Also print the number of frames
+        -- drawn so far every so often.
+
+        updateWorld : Running ()
+        updateWorld
+               = do f <- Frames :- get
                     s <- Starfield :- get
                     s' <- updateStarfield s
                     Starfield :- put s'
                     Frames :- put (f + 1)
                     when ((f `mod` 100) == 0) (putStrLn (show f))
 
+                    (x, y) <- Position :- get
+                    xm <- XMove :- get
+                    ym <- YMove :- get
+                    Position :- put (x + xm, y + ym)
+
+        -- Event loop simply has to draw the current state, update the
+        -- state according to how the ellipse is moving, then process
+        -- any incoming events
+
         eventLoop : Running ()
         eventLoop = do draw
-                       update
+                       updateWorld
                        e <- poll
                        continue <- process e
                        when continue eventLoop
