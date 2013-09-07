@@ -36,6 +36,9 @@ main = do surface <- startSDL 640 480
         processEvent s f x y mx my (Just (KeyUp KeyDownArrow)) 
                 = eventLoop s f x y mx 0
         processEvent s f x y mx my (Just AppQuit) = return ()
+        processEvent s f x y mx my (Just (KeyDown (KeyAny k)))
+                = do print k
+                     eventLoop s f x y mx my
         processEvent s f x y mx my _ = eventLoop s f x y mx my
 
 

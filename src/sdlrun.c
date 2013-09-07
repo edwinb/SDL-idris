@@ -86,8 +86,74 @@ VAL KEY(VM* vm, int tag, SDLKey key) {
     case SDLK_RIGHT:
         idris_constructor(k, vm, 3, 0, 0);
 	break;
+    case SDLK_ESCAPE:
+        idris_constructor(k, vm, 4, 0, 0);
+	break;
+    case SDLK_SPACE:
+        idris_constructor(k, vm, 5, 0, 0);
+	break;
+    case SDLK_TAB:
+        idris_constructor(k, vm, 6, 0, 0);
+	break;
+    case SDLK_F1:
+        idris_constructor(k, vm, 7, 0, 0);
+	break;
+    case SDLK_F2:
+        idris_constructor(k, vm, 8, 0, 0);
+	break;
+    case SDLK_F3:
+        idris_constructor(k, vm, 9, 0, 0);
+	break;
+    case SDLK_F4:
+        idris_constructor(k, vm, 10, 0, 0);
+	break;
+    case SDLK_F5:
+        idris_constructor(k, vm, 11, 0, 0);
+	break;
+    case SDLK_F6:
+        idris_constructor(k, vm, 12, 0, 0);
+	break;
+    case SDLK_F7:
+        idris_constructor(k, vm, 13, 0, 0);
+	break;
+    case SDLK_F8:
+        idris_constructor(k, vm, 14, 0, 0);
+	break;
+    case SDLK_F9:
+        idris_constructor(k, vm, 15, 0, 0);
+	break;
+    case SDLK_F10:
+        idris_constructor(k, vm, 16, 0, 0);
+	break;
+    case SDLK_F11:
+        idris_constructor(k, vm, 17, 0, 0);
+	break;
+    case SDLK_F12:
+        idris_constructor(k, vm, 18, 0, 0);
+	break;
+    case SDLK_F13:
+        idris_constructor(k, vm, 19, 0, 0);
+	break;
+    case SDLK_F14:
+        idris_constructor(k, vm, 20, 0, 0);
+	break;
+    case SDLK_F15:
+        idris_constructor(k, vm, 21, 0, 0);
+	break;
+    case SDLK_LSHIFT:
+        idris_constructor(k, vm, 22, 0, 0);
+	break;
+    case SDLK_RSHIFT:
+        idris_constructor(k, vm, 23, 0, 0);
+	break;
+    case SDLK_LCTRL:
+        idris_constructor(k, vm, 24, 0, 0);
+	break;
+    case SDLK_RCTRL:
+        idris_constructor(k, vm, 25, 0, 0);
+	break;
     default:
-        idris_constructor(k, vm, 4, 1, 0);
+        idris_constructor(k, vm, 26, 1, 0);
         // safe because there's no further allocation.
         idris_setConArg(k, 0, MKINT((intptr_t)key));
 	break;
