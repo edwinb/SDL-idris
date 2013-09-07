@@ -11,11 +11,26 @@ data Colour = MkCol Int Int Int Int
 black : Colour
 black = MkCol 0 0 0 255
 
+white : Colour
+white = MkCol 255 255 255 255
+
 red : Colour
 red = MkCol 255 0 0 255
 
 green : Colour
 green = MkCol 0 255 0 255
+
+blue : Colour
+blue = MkCol 0 0 255 255
+
+yellow : Colour
+yellow = MkCol 255 255 0 255
+
+cyan : Colour
+cyan = MkCol 0 255 255 255
+
+magenta : Colour
+magenta = MkCol 255 0 255 255
 
 data Sdl : Effect where
      Initialise : Int -> Int -> Sdl () Srf ()
