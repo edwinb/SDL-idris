@@ -118,14 +118,34 @@ instance Eq Key where
   _             == _              = False
 
 public
+data Button = Left | Middle | Right | WheelUp | WheelDown
+
+instance Eq Button where
+  Left == Left = True
+  Middle == Middle = True
+  Right == Right = True
+  WheelUp == WheelUp = True
+  WheelDown == WheelDown = True
+  _ == _ = False
+
+public
 data Event = KeyDown Key
            | KeyUp Key
+           | MouseMotion Int Int Int Int
+           | MouseButtonDown Button Int Int
+           | MouseButtonUp Button Int Int
 	   | AppQuit
 
 instance Eq Event where
   (KeyDown x) == (KeyDown y) = x == y
   (KeyUp x)   == (KeyUp y)   = x == y
   AppQuit     == AppQuit     = True
+  (MouseMotion x y rx ry) == (MouseMotion x' y' rx' ry')
+      = x == x' && y == y' && rx == rx' && ry == ry'
+  (MouseButtonDown b x y) == (MouseButtonDown b' x' y')
+      = b == b' && x == x' && y == y'
+  (MouseButtonUp b x y) == (MouseButtonUp b' x' y')
+      = b == b' && x == x' && y == y'
   _           == _           = False
 
 public

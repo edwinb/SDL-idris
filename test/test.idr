@@ -39,6 +39,12 @@ main = do surface <- startSDL 640 480
         processEvent s f x y mx my (Just (KeyDown (KeyAny k)))
                 = do print k
                      eventLoop s f x y mx my
+        processEvent s f x y mx my (Just (MouseMotion mousex mousey _ _))
+                = do print (mousex, mousey)
+                     eventLoop s f x y mx my
+        processEvent s f x y mx my (Just (MouseButtonUp Left mousex mousey))
+                = do print (mousex, mousey)
+                     eventLoop s f mousex mousey mx my
         processEvent s f x y mx my _ = eventLoop s f x y mx my
 
 

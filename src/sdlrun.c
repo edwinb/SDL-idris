@@ -62,13 +62,48 @@ void* startSDL(int x, int y) {
     return (void*)s;
 }
 
-/*
-data Key = KeyUpArrow
-         | KeyDownArrow
-	 | KeyLeftArrow
-	 | KeyRightArrow
-	 | KeyAny Int
-*/
+VAL MOTION(VM* vm, int x, int y, int relx, int rely) {
+    VAL m;
+    idris_constructor(m, vm, 2, 4, 0);
+    idris_setConArg(m, 0, MKINT((intptr_t)x));
+    idris_setConArg(m, 1, MKINT((intptr_t)y));
+    idris_setConArg(m, 2, MKINT((intptr_t)relx));
+    idris_setConArg(m, 3, MKINT((intptr_t)rely));
+    return m;
+}
+
+VAL BUTTON(VM* vm, int tag, int b, int x, int y) {
+    VAL button;
+
+    switch(b) {
+    case SDL_BUTTON_LEFT:
+        idris_constructor(button, vm, 0, 0, 0);
+        break;
+    case SDL_BUTTON_MIDDLE:
+        idris_constructor(button, vm, 1, 0, 0);
+        break;
+    case SDL_BUTTON_RIGHT:
+        idris_constructor(button, vm, 2, 0, 0);
+        break;
+    case SDL_BUTTON_WHEELUP:
+        idris_constructor(button, vm, 3, 0, 0);
+        break;
+    case SDL_BUTTON_WHEELDOWN:
+        idris_constructor(button, vm, 4, 0, 0);
+        break;
+    default:
+        idris_constructor(button, vm, 0, 0, 0);
+        break;
+    }
+
+    VAL event;
+    idris_constructor(event, vm, tag, 3, 0);
+    idris_setConArg(event, 0, button);
+    idris_setConArg(event, 1, MKINT((intptr_t)x));
+    idris_setConArg(event, 2, MKINT((intptr_t)y));
+
+    return event;
+}
 
 VAL KEY(VM* vm, int tag, SDLKey key) {
     VAL k;
@@ -167,8 +202,13 @@ VAL KEY(VM* vm, int tag, SDLKey key) {
 }
 
 /*
+data Button = Left | Middle | Right | WheelUp | WheelDown
+
 data Event = KeyDown Key
            | KeyUp Key
+           | MouseMotion Int Int Int Int
+           | MouseButtonDown Button Int Int
+           | MouseButtonUp Button Int Int
 	   | AppQuit
 
 pollEvent : IO (Maybe Event)
@@ -195,8 +235,20 @@ void* pollEvent(VM* vm)
 	case SDL_KEYUP:
 	    ievent = KEY(vm, 1, event.key.keysym.sym);
 	    break;
+        case SDL_MOUSEMOTION:
+            ievent = MOTION(vm, event.motion.x, event.motion.y,
+                                event.motion.xrel, event.motion.yrel);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            ievent = BUTTON(vm, 3, event.button.button,
+                                event.button.x, event.button.y);
+            break;
+        case SDL_MOUSEBUTTONUP:
+            ievent = BUTTON(vm, 4, event.button.button,
+                                event.button.x, event.button.y);
+            break;
 	case SDL_QUIT:
-	    idris_constructor(ievent, vm, 2, 0, 0);
+	    idris_constructor(ievent, vm, 5, 0, 0);
 	    break;
 	default:
 	    idris_constructor(idris_event, vm, 0, 0, 0); // Nothing
