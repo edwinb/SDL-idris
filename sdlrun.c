@@ -94,7 +94,7 @@ VAL KEY(VM* vm, int tag, SDLKey key) {
     }
 
     VAL event;
-    idris_constructor(event, vm, 0, 1, 0);
+    idris_constructor(event, vm, tag, 1, 0);
     idris_setConArg(event, 0, k);
 
     return event;
@@ -105,7 +105,7 @@ data Event = KeyDown Key
            | KeyUp Key
 	   | AppQuit
 
-pollEvent : Maybe Event
+pollEvent : IO (Maybe Event)
 */
 
 void* pollEvent(VM* vm) 
@@ -114,11 +114,11 @@ void* pollEvent(VM* vm)
 
     SDL_Event event; // = (SDL_Event *) GC_MALLOC(sizeof(SDL_Event));
     int r = SDL_PollEvent(&event);
-    
+
     idris_requireAlloc(vm, 128); // Conservative!
 
     if (r==0) {
-        idris_constructor(idris_event, vm, 1, 0, 0); // Nothing
+        idris_constructor(idris_event, vm, 0, 0, 0); // Nothing
     }
     else {
 	VAL ievent = NULL;
@@ -133,11 +133,11 @@ void* pollEvent(VM* vm)
 	    idris_constructor(ievent, vm, 2, 0, 0);
 	    break;
 	default:
-	    idris_constructor(idris_event, vm, 1, 0, 0); // Nothing
+	    idris_constructor(idris_event, vm, 0, 0, 0); // Nothing
             idris_doneAlloc(vm);
             return idris_event;
 	}
-        idris_constructor(idris_event, vm, 0, 1, 0);
+        idris_constructor(idris_event, vm, 1, 1, 0);
         idris_setConArg(idris_event, 0, ievent); // Just ievent
     }
 

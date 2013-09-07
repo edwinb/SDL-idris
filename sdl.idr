@@ -10,69 +10,75 @@ module SDL
 
 -- Set up a window
 
+abstract 
 data SDLSurface = MkSurface Ptr
 
-do_startSDL : Int -> Int -> IO Ptr
-do_startSDL x y = mkForeign (FFun "startSDL" [FInt, FInt] FPtr) x y
-
+public
 startSDL : Int -> Int -> IO SDLSurface
-startSDL x y = do ptr <- do_startSDL x y
+startSDL x y = do ptr <- do_startSDL
 		  return (MkSurface ptr)
+  where do_startSDL = mkForeign (FFun "startSDL" [FInt, FInt] FPtr) x y
+
+public
+flipBuffers : SDLSurface -> IO ();
+flipBuffers (MkSurface ptr) 
+     = mkForeign (FFun "flipBuffers" [FPtr] FUnit) ptr
+
 
 -- Some drawing primitives
 
-{-
-_filledRect = mkForeign (FFun "filledRect"
-         (Cons FPtr (Cons FInt (Cons FInt (Cons FInt (Cons FInt
-		    (Cons FInt (Cons FInt (Cons FInt (Cons FInt Nil)))))))))
-	 FUnit) %eval;
-
+public
 filledRect : SDLSurface -> Int -> Int -> Int -> Int ->
-			 Int -> Int -> Int -> Int -> IO ();
-filledRect (mkSurface ptr) x y w h r g b a = _filledRect ptr x y w h r g b a;
+                           Int -> Int -> Int -> Int -> IO ()
+filledRect (MkSurface ptr) x y w h r g b a 
+      = mkForeign (FFun "filledRect" [FPtr, FInt, FInt, FInt, FInt,
+                                            FInt, FInt, FInt, FInt] FUnit)
+                  ptr x y w h r g b a
 
-_filledEllipse = mkForeign (FFun "filledEllipse"
-         (Cons FPtr (Cons FInt (Cons FInt (Cons FInt (Cons FInt
-		    (Cons FInt (Cons FInt (Cons FInt (Cons FInt Nil)))))))))
-	 FUnit) %eval;
-
+public
 filledEllipse : SDLSurface -> Int -> Int -> Int -> Int ->
-			 Int -> Int -> Int -> Int -> IO ();
-filledEllipse (mkSurface ptr) x y w h r g b a = _filledEllipse ptr x y w h r g b a;
+                              Int -> Int -> Int -> Int -> IO ()
+filledEllipse (MkSurface ptr) x y rx ry r g b a 
+      = mkForeign (FFun "filledEllipse" [FPtr, FInt, FInt, FInt, FInt,
+                                               FInt, FInt, FInt, FInt] FUnit)
+                  ptr x y rx ry r g b a
 
-_drawLine = mkForeign (FFun "drawLine"
-         (Cons FPtr (Cons FInt (Cons FInt (Cons FInt (Cons FInt
-		    (Cons FInt (Cons FInt (Cons FInt (Cons FInt Nil)))))))))
-	 FUnit) %eval;
-
+public
 drawLine : SDLSurface -> Int -> Int -> Int -> Int ->
-			 Int -> Int -> Int -> Int -> IO ();
-drawLine (mkSurface ptr) x y ex ey r g b a = _drawLine ptr x y ex ey r g b a;
+                         Int -> Int -> Int -> Int -> IO ()
+drawLine (MkSurface ptr) x y ex ey r g b a 
+      = mkForeign (FFun "drawLine" [FPtr, FInt, FInt, FInt, FInt,
+                                          FInt, FInt, FInt, FInt] FUnit)
+                  ptr x y ex ey r g b a
 
-_flip = mkForeign (FFun "flipBuffers" (Cons FPtr Nil) FUnit) %eval;
-
-flipBuffers : SDLSurface -> IO ();
-flipBuffers (mkSurface ptr) = _flip ptr;
-
--- Events
-
+public
 data Key = KeyUpArrow
          | KeyDownArrow
 	 | KeyLeftArrow
 	 | KeyRightArrow
-	 | KeyAny Int;
+	 | KeyAny Int
 
-keyEq : Key -> Key -> Bool;
-keyEq KeyUpArrow KeyUpArrow = True;
-keyEq KeyDownArrow KeyDownArrow = True;
-keyEq KeyLeftArrow KeyLeftArrow = True;
-keyEq KeyRightArrow KeyRightArrow = True;
-keyEq (KeyAny x) (KeyAny y) = x == y;
-keyEq _ _ = False;
+instance Eq Key where
+  KeyUpArrow    == KeyUpArrow     = True
+  KeyDownArrow  == KeyDownArrow   = True
+  KeyLeftArrow  == KeyLeftArrow   = True
+  KeyRightArrow == KeyRightArrow  = True
+  (KeyAny x)    == (KeyAny y)     = x == y
+  _             == _              = False
 
+public
 data Event = KeyDown Key
            | KeyUp Key
-	   | AppQuit;
+	   | AppQuit
 
-pollEvent = mkForeign (FFun "pollEvent" Nil (FAny (Maybe Event))) %eval;
--}
+instance Eq Event where
+  (KeyDown x) == (KeyDown y) = x == y
+  (KeyUp x)   == (KeyUp y)   = x == y
+  AppQuit     == AppQuit     = True
+  _           == _           = False
+
+public
+pollEvent : IO (Maybe Event)
+pollEvent 
+    = mkForeign (FFun "pollEvent" [FPtr] (FAny (Maybe Event))) prim__vm
+
