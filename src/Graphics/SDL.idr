@@ -64,8 +64,8 @@ data Key = KeyUpArrow
 	 | KeyLeftArrow
 	 | KeyRightArrow
          | KeyEsc
-         | KeyTab
          | KeySpace
+         | KeyTab
          | KeyF1
          | KeyF2
          | KeyF3

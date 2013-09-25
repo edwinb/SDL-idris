@@ -68,6 +68,9 @@ flip = Flip
 poll : Handler Sdl e => Eff e [SDL_ON] (Maybe Event)
 poll = Poll
 
+getSurface : Handler Sdl e => Eff e [SDL_ON] SDLSurface
+getSurface = WithSurface (\s => return s)
+
 rectangle : Handler Sdl e =>
             Colour -> Int -> Int -> Int -> Int -> Eff e [SDL_ON] ()
 rectangle (MkCol r g b a) x y w h 
