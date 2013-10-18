@@ -1,5 +1,7 @@
 module Aliens
 
+import Effect.SDL
+
 record Alien : Type where
     MkAlien : (position : (Int, Int)) ->
               (xmovement : Int) ->
@@ -45,3 +47,15 @@ checkHit bs as = checkAll bs as [] []
             = checkAll bs asAcc [] (b :: bsAcc)
         checkAll [] as asAcc bsAcc = (bsAcc, as ++ asAcc)
              
+drawAliens : List Alien -> Eff IO [SDL_ON] ()
+drawAliens [] = return ()
+drawAliens (a :: as) = do let (x, y) = Alien.position a
+                          drawAlien x y
+                          drawAliens as
+    where drawAlien : Int -> Int -> Eff IO [SDL_ON] ()
+          drawAlien x y = do ellipse green x y 20 16
+                             ellipse red (x-8) (y-6) 3 3
+                             ellipse red (x-8) (y+6) 3 3
+                             rectangle red (x-2) (y-3) 16 4
+                             rectangle red (x-2) (y+3) 16 4
+

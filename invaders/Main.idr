@@ -12,6 +12,7 @@ import Gamestate
 
 data Frames : Type where -- empty type, just for labelling
 
+-------
 -- SDL effect is parameterised by an underyling 'surface' resource which
 -- only exists when initialised.
 
@@ -30,6 +31,7 @@ Prog i t = Eff IO [SDL i,
 Running : Type -> Type
 Running t = Prog SDLSurface t
 
+-------
 emain : Prog () ()
 emain = do initialise 640 480
            initStarfield [] 200
@@ -38,8 +40,7 @@ emain = do initialise 640 480
   where 
         draw : Running ()
         draw = do rectangle black 0 0 640 480
-                  s <- Starfield :- get
-                  drawStarfield s
+                  drawStarfield !(Starfield :- get)
                   gs <- Gamestate :- get
                   drawBullets (bullets gs)
                   drawBombs (bombs gs)
@@ -61,6 +62,7 @@ emain = do initialise 640 480
                          updateStarfield
                          updateGamestate
 
+        -------
         -- Event loop simply has to draw the current state, update the
         -- state according to how the ellipse is moving, then process
         -- any incoming events
@@ -68,9 +70,7 @@ emain = do initialise 640 480
         eventLoop : Running ()
         eventLoop = do draw
                        updateWorld
-                       e <- poll
-                       continue <- process e
-                       when continue eventLoop
+                       when !(process !poll) eventLoop
 
 main : IO ()
 main = run [(), Frames := 0,

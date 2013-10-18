@@ -19,6 +19,9 @@ record Gamestate : Type where
 initState : Gamestate
 initState = MkGamestate (320,400) 0 0 [] [] startAliens
 
+---------
+-- Game state effect needs access to a random number generator
+
 GS : (Type -> Type) -> Type -> Type
 GS m t = Eff m [Gamestate ::: STATE Gamestate, RND] t
 
@@ -57,30 +60,19 @@ drawBombs [] = return ()
 drawBombs ((x, y) :: bs) = do rectangle yellow (x-1) (y-4) 2 8
                               drawBombs bs
 
-drawAliens : List Alien -> Eff IO [SDL_ON] ()
-drawAliens [] = return ()
-drawAliens (a :: as) = do let (x, y) = Alien.position a
-                          drawAlien x y
-                          drawAliens as
-    where drawAlien : Int -> Int -> Eff IO [SDL_ON] ()
-          drawAlien x y = do ellipse green x y 20 16
-                             ellipse red (x-10) (y-5) 4 4
-                             ellipse red (x+10) (y-5) 4 4
-
 randomDropBomb : GS m ()
-randomDropBomb = do gs <- Gamestate :- get
-                    randomDrop (map (Alien.position) (aliens gs)) 
+randomDropBomb = randomDrop (map (Alien.position) (aliens !(Gamestate :- get))) 
  where
    randomDrop : List (Int, Int) -> GS m ()
    randomDrop [] = return ()
    randomDrop ((x, y) :: as) 
-        = do num <- rndInt 1 10000
-             if (num == 100)  
+        = do if (!(rndInt 1 3000) == 100)  
                  then (do s <- Gamestate :- get
                           let bs = bombs s
                           Gamestate :- put (record { bombs = (x, y+10) :: bs } s))
                  else randomDrop as
 
+---------
 updateGamestate : GS m ()
 updateGamestate = do gs <- Gamestate :- get
                      let (x, y) = Gamestate.position gs
