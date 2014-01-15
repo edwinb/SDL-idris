@@ -8,7 +8,7 @@ data Random : Type -> Type -> Type -> Type where
 using (m : Type -> Type)
   instance Handler Random m where
      handle seed getRandom k
-              = let seed' = (1664525 * seed + 1013904223) `prim__sremInt` (pow 2 32) in
+              = let seed' = (1664525 * seed + 1013904223) `prim__sremInt` (pow 2 29) in
                     k seed' seed'
 
 RND : EFFECT
