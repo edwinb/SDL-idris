@@ -33,20 +33,20 @@ magenta : Colour
 magenta = MkCol 255 0 255 255
 
 data Sdl : Effect where
-     Initialise : Int -> Int -> Sdl () Srf ()
-     Quit : Sdl Srf () ()
-     Flip : Sdl Srf Srf ()
-     Poll : Sdl a a (Maybe Event)
+     Initialise : Int -> Int -> Sdl () () (\v => Srf)
+     Quit : Sdl () Srf (\v => ())
+     Flip : Sdl () Srf (\v => Srf)
+     Poll : Sdl (Maybe Event) a (\v => a)
 
-     WithSurface : (Srf -> IO a) -> Sdl Srf Srf a
+     WithSurface : (Srf -> IO a) -> Sdl a Srf (\v => Srf)
 
 instance Handler Sdl IO where
-     handle () (Initialise x y) k = do srf <- startSDL x y; k srf ()
+     handle () (Initialise x y) k = do srf <- startSDL x y; k () srf
      handle s Quit k = do endSDL; k () ()
 
-     handle s Flip k = do flipBuffers s; k s ()
-     handle s Poll k = do x <- pollEvent; k s x
-     handle s (WithSurface f) k = do r <- f s; k s r 
+     handle s Flip k = do flipBuffers s; k () s
+     handle s Poll k = do x <- pollEvent; k x s
+     handle s (WithSurface f) k = do r <- f s; k r s 
 
 SDL : Type -> EFFECT
 SDL res = MkEff res Sdl
@@ -55,34 +55,34 @@ SDL_ON : EFFECT
 SDL_ON = SDL SDLSurface
 
 initialise : Handler Sdl e => 
-             Int -> Int -> EffM e [SDL ()] [SDL_ON] ()
+             Int -> Int -> { [SDL ()] ==> [SDL_ON] } Eff e () 
 initialise x y = Initialise x y
 
 quit : Handler Sdl e =>
-       EffM e [SDL_ON] [SDL ()] ()
+       { [SDL_ON] ==> [SDL ()] } Eff e () 
 quit = Quit
 
-flip : Handler Sdl e => Eff e [SDL_ON] ()
+flip : Handler Sdl e => { [SDL_ON] } Eff e ()
 flip = Flip
 
-poll : Handler Sdl e => Eff e [SDL_ON] (Maybe Event)
+poll : Handler Sdl e => { [SDL_ON] } Eff e (Maybe Event) 
 poll = Poll
 
-getSurface : Handler Sdl e => Eff e [SDL_ON] SDLSurface
+getSurface : Handler Sdl e => { [SDL_ON] } Eff e SDLSurface
 getSurface = WithSurface (\s => return s)
 
 rectangle : Handler Sdl e =>
-            Colour -> Int -> Int -> Int -> Int -> Eff e [SDL_ON] ()
+            Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff e () 
 rectangle (MkCol r g b a) x y w h 
      = WithSurface (\s => filledRect s x y w h r g b a)
 
 ellipse : Handler Sdl e =>
-          Colour -> Int -> Int -> Int -> Int -> Eff e [SDL_ON] ()
+          Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff e () 
 ellipse (MkCol r g b a) x y rx ry 
      = WithSurface (\s => filledEllipse s x y rx ry r g b a)
 
 line : Handler Sdl e =>
-       Colour -> Int -> Int -> Int -> Int -> Eff e [SDL_ON] ()
+       Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff e () 
 line (MkCol r g b a) x y ex ey 
      = WithSurface (\s => drawLine s x y ex ey r g b a)
 
