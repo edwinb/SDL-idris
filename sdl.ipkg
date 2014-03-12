@@ -2,7 +2,7 @@ package sdl
 
 sourcedir = src
 modules = Graphics.SDL, Effect.SDL
-opts = "-p neweffects" 
+opts = "-p effects" 
 
 makefile = MakefileSDLC
 
