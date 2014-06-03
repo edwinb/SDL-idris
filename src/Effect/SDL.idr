@@ -56,34 +56,34 @@ SDL_ON = SDL SDLSurface
 
 initialise : Handler Sdl e => 
              Int -> Int -> { [SDL ()] ==> [SDL_ON] } Eff e () 
-initialise x y = Initialise x y
+initialise x y = call $ Initialise x y
 
 quit : Handler Sdl e =>
        { [SDL_ON] ==> [SDL ()] } Eff e () 
-quit = Quit
+quit = call Quit
 
 flip : Handler Sdl e => { [SDL_ON] } Eff e ()
-flip = Flip
+flip = call Flip
 
 poll : Handler Sdl e => { [SDL_ON] } Eff e (Maybe Event) 
-poll = Poll
+poll = call Poll
 
 getSurface : Handler Sdl e => { [SDL_ON] } Eff e SDLSurface
-getSurface = WithSurface (\s => return s)
+getSurface = call $ WithSurface (\s => return s)
 
 rectangle : Handler Sdl e =>
             Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff e () 
 rectangle (MkCol r g b a) x y w h 
-     = WithSurface (\s => filledRect s x y w h r g b a)
+     = call $ WithSurface (\s => filledRect s x y w h r g b a)
 
 ellipse : Handler Sdl e =>
           Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff e () 
 ellipse (MkCol r g b a) x y rx ry 
-     = WithSurface (\s => filledEllipse s x y rx ry r g b a)
+     = call $ WithSurface (\s => filledEllipse s x y rx ry r g b a)
 
 line : Handler Sdl e =>
        Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff e () 
 line (MkCol r g b a) x y ex ey 
-     = WithSurface (\s => drawLine s x y ex ey r g b a)
+     = call $ WithSurface (\s => drawLine s x y ex ey r g b a)
 
 
