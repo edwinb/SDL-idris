@@ -1,7 +1,7 @@
 module Effect.SDL
 
 import Effects
-import Graphics.SDL
+import public Graphics.SDL
 
 Srf : Type
 Srf = SDLSurface
