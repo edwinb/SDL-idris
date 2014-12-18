@@ -228,7 +228,7 @@ void* pollEvent(VM* vm)
     SDL_Event event; // = (SDL_Event *) GC_MALLOC(sizeof(SDL_Event));
     int r = SDL_PollEvent(&event);
 
-    idris_requireAlloc(vm, 128); // Conservative!
+    idris_requireAlloc(128); // Conservative!
 
     if (r==0) {
         idris_constructor(idris_event, vm, 0, 0, 0); // Nothing
