@@ -1,12 +1,11 @@
 module Graphics.SDL
 
+import Graphics.Config
+
 %include C "sdlrun.h"
 %include C "SDL/SDL.h"
 %link C "sdlrun.o"
 %lib C "SDL_gfx"
-
-%flag C "`sdl-config --libs`"
-%flag C "`sdl-config --cflags`"
 
 -- Set up a window
 
