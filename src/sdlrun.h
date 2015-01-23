@@ -7,6 +7,9 @@
 void* startSDL(int x, int y);
 
 // Drawing primitives
+void pixel(void *s,
+          int x, int y,
+          int r, int g, int b, int a);
 void filledRect(void *s,
 	        int x, int y, int w, int h,
 	        int r, int g, int b, int a);

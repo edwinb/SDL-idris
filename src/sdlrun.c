@@ -23,6 +23,14 @@ SDL_Surface* graphicsInit(int xsize, int ysize) {
     return screen;
 }
 
+void pixel(void *s_in,
+          int x, int y,
+          int r, int g, int b, int a)
+{
+    SDL_Surface* s = (SDL_Surface*)s_in;
+    pixelRGBA(s, x, y, r, g, b, a);
+}
+
 void filledRect(void *s_in,
 	        int x, int y, int w, int h,
 	        int r, int g, int b, int a) 
