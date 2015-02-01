@@ -9,19 +9,26 @@ import Graphics.Config
 
 -- Set up a window
 
-abstract 
+||| A reference to an SDL surface, that is, a window.
+abstract
 data SDLSurface = MkSurface Ptr
 
+||| Start SDL running in a window.
+|||
+||| @ x the width of the SDL window.
+||| @ y the height of the SDL window.
 public
-startSDL : Int -> Int -> IO SDLSurface
+startSDL : (x, y : Int) -> IO SDLSurface
 startSDL x y = do ptr <- do_startSDL
 		  return (MkSurface ptr)
   where do_startSDL = mkForeign (FFun "startSDL" [FInt, FInt] FPtr) x y
 
+||| Quit SDL.
 public
 endSDL : IO ()
 endSDL = mkForeign (FFun "SDL_Quit" [] FUnit)
 
+||| Flip the drawing and displayed buffers.
 public
 flipBuffers : SDLSurface -> IO ();
 flipBuffers (MkSurface ptr) 
@@ -30,17 +37,37 @@ flipBuffers (MkSurface ptr)
 
 -- Some drawing primitives
 
+||| Draw a filled rectangle.
+||| @ x the horizontal position of the upper-left corner.
+||| @ y the vertical position of the upper-left corner.
+||| @ w the width of the rectangle.
+||| @ r how much red to use (0-255)
+||| @ g how much green to use (0-255)
+||| @ b how much blue to use (0-255)
+||| @ a how much alpha to use (0-255)
 public
-filledRect : SDLSurface -> Int -> Int -> Int -> Int ->
-                           Int -> Int -> Int -> Int -> IO ()
+filledRect : SDLSurface ->
+             (x, y, w, h, r, g, b, a : Int) ->
+             IO ()
 filledRect (MkSurface ptr) x y w h r g b a 
       = mkForeign (FFun "filledRect" [FPtr, FInt, FInt, FInt, FInt,
                                             FInt, FInt, FInt, FInt] FUnit)
                   ptr x y w h r g b a
 
+||| Draw a filled ellipse.
+|||
+||| @ x the horiontal position of the center
+||| @ y the vertical position of the center
+||| @ rx the horizontal distance from the center to the edge
+||| @ ry the vertical distance from the center to the edge
+||| @ r how much red to use (0-255)
+||| @ g how much green to use (0-255)
+||| @ b how much blue to use (0-255)
+||| @ a how much alpha to use (0-255)
 public
-filledEllipse : SDLSurface -> Int -> Int -> Int -> Int ->
-                              Int -> Int -> Int -> Int -> IO ()
+filledEllipse : SDLSurface ->
+                (x, y, rx, ry, r, g, b, a : Int) ->
+                IO ()
 filledEllipse (MkSurface ptr) x y rx ry r g b a 
       = mkForeign (FFun "filledEllipse" [FPtr, FInt, FInt, FInt, FInt,
                                                FInt, FInt, FInt, FInt] FUnit)
@@ -56,7 +83,7 @@ drawLine (MkSurface ptr) x y ex ey r g b a
 
 -- TODO: More keys still to add... careful to do the right mappings in
 -- KEY in sdlrun.c
-
+||| SDL keys
 public
 data Key = KeyUpArrow
          | KeyDownArrow
@@ -120,6 +147,7 @@ instance Eq Key where
   (KeyAny x)    == (KeyAny y)     = x == y
   _             == _              = False
 
+||| Mouse button presses
 public
 data Button = Left | Middle | Right | WheelUp | WheelDown
 
@@ -131,6 +159,7 @@ instance Eq Button where
   WheelDown == WheelDown = True
   _ == _ = False
 
+||| SDL events.
 public
 data Event = KeyDown Key
            | KeyUp Key
@@ -152,6 +181,7 @@ instance Eq Event where
       = b == b' && x == x' && y == y'
   _           == _           = False
 
+||| Poll for events.
 public
 pollEvent : IO (Maybe Event)
 pollEvent 
