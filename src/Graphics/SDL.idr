@@ -86,7 +86,7 @@ data Key = KeyUpArrow
          | KeyRCtrl
 	 | KeyAny Char
 
-instance Eq Key where
+Eq Key where
   KeyUpArrow    == KeyUpArrow     = True
   KeyDownArrow  == KeyDownArrow   = True
   KeyLeftArrow  == KeyLeftArrow   = True
@@ -123,7 +123,7 @@ instance Eq Key where
 public
 data Button = Left | Middle | Right | WheelUp | WheelDown
 
-instance Eq Button where
+Eq Button where
   Left == Left = True
   Middle == Middle = True
   Right == Right = True
@@ -140,7 +140,7 @@ data Event = KeyDown Key
            | Resize Int Int
 	   | AppQuit
 
-instance Eq Event where
+Eq Event where
   (KeyDown x) == (KeyDown y) = x == y
   (KeyUp x)   == (KeyUp y)   = x == y
   AppQuit     == AppQuit     = True

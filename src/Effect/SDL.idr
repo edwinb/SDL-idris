@@ -40,7 +40,7 @@ data Sdl : Effect where
 
      WithSurface : (Srf -> IO a) -> Sdl a Srf (\v => Srf)
 
-instance Handler Sdl IO where
+Handler Sdl IO where
      handle () (Initialise x y) k = do srf <- startSDL x y; k () srf
      handle s Quit k = do endSDL; k () ()
 
