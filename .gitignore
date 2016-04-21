@@ -1,0 +1,4 @@
+*.ibc
+src/Graphics/Config.idr
+src/sdlrun.o
+*~
