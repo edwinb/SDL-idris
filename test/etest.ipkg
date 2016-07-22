@@ -1,0 +1,6 @@
+package etest
+
+pkgs = effects, sdl
+
+main = etest
+executable = etest

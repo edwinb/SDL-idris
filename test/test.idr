@@ -15,7 +15,7 @@ main = do surface <- startSDL 640 480
                              filledRect s 0 0 640 480 0 0 0 128
                              filledRect s 100 100 50 50 255 0 0 128
                              filledEllipse s x y 20 20 0 255 0 128
-                             when ((f `mod` 100) == 0) $ print f
+                             when ((f `mod` 100) == 0) $ printLn f
                              flipBuffers s
                              processEvent s (f+1) (x+mx) (y+my) mx my event
 
@@ -40,11 +40,9 @@ main = do surface <- startSDL 640 480
                 = do print k
                      eventLoop s f x y mx my
         processEvent s f x y mx my (Just (MouseMotion mousex mousey _ _))
-                = do print (mousex, mousey)
+                = do printLn (mousex, mousey)
                      eventLoop s f x y mx my
         processEvent s f x y mx my (Just (MouseButtonUp Left mousex mousey))
-                = do print (mousex, mousey)
+                = do printLn (mousex, mousey)
                      eventLoop s f mousex mousey mx my
         processEvent s f x y mx my _ = eventLoop s f x y mx my
-
-

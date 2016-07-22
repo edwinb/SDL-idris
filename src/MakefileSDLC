@@ -1,11 +1,11 @@
 CC = gcc
-CFLAGS = `idris --include` `sdl-config --cflags`
+CFLAGS = `idris --include` `pkg-config --cflags SDL_gfx`
 
 sdlrun.o: config sdlrun.c sdlrun.h
 
 config: .PHONY
-	echo "%flag C \"`sdl-config --libs`\"" > Graphics/Config.idr
-	echo "%flag C \"`sdl-config --cflags`\"" >> Graphics/Config.idr
+	echo "%flag C \"`pkg-config --libs SDL_gfx`\"" > Graphics/Config.idr
+	echo "%flag C \"`pkg-config --cflags SDL_gfx`\"" >> Graphics/Config.idr
 
 clean: .PHONY
 	rm sdlrun.o
