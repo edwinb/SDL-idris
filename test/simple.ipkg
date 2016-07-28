@@ -1,0 +1,6 @@
+package test
+
+pkgs = effects, sdl
+
+main = simple
+executable = simple

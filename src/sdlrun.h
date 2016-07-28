@@ -1,8 +1,6 @@
 #ifndef __SDLRUN_H
 #define __SDLRUN_H
 
-#include <idris_rts.h>
-
 // Start SDL, open a window with dimensions (x,y)
 void* startSDL(int x, int y);
 
@@ -19,6 +17,6 @@ void drawLine(void* s_in,
 	      int r, int g, int b, int a);
 
 // Events
-void* pollEvent(VM* vm); // builds an Idris value
+void* pollEvent(void* vm); // builds an Idris value
 
 #endif

@@ -2,10 +2,8 @@ package sdl
 
 sourcedir = src
 modules = Graphics.SDL, Graphics.Config, Effect.SDL
-opts = "-p effects" 
+opts = "-p effects"
 
 makefile = MakefileSDLC
 
 objs = sdlrun.o, sdlrun.h
-libs = SDL, SDL_gfx
-
