@@ -31,6 +31,14 @@ flipBuffers (MkSurface ptr)
 -- Some drawing primitives
 
 public
+pixel : SDLSurface -> Int -> Int ->
+                      Int -> Int -> Int -> Int -> IO ()
+pixel (MkSurface ptr) x y r g b a
+      = mkForeign (FFun "pixel" [FPtr, FInt, FInt,
+                                       FInt, FInt, FInt, FInt] FUnit)
+                  ptr x y r g b a
+
+public
 filledRect : SDLSurface -> Int -> Int -> Int -> Int ->
                            Int -> Int -> Int -> Int -> IO ()
 filledRect (MkSurface ptr) x y w h r g b a 
