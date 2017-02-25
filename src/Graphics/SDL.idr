@@ -9,20 +9,20 @@ import Graphics.Config
 
 -- Set up a window
 
-abstract 
+export 
 data SDLSurface = MkSurface Ptr
 
-public
+export
 startSDL : Int -> Int -> IO SDLSurface
 startSDL x y = do ptr <- do_startSDL
-		  return (MkSurface ptr)
+		  pure (MkSurface ptr)
   where do_startSDL = foreign FFI_C "startSDL" (Int -> Int -> IO Ptr) x y
 
-public
+export
 endSDL : IO ()
 endSDL = foreign FFI_C "SDL_Quit" (IO ())
 
-public
+export
 flipBuffers : SDLSurface -> IO ();
 flipBuffers (MkSurface ptr) 
      = foreign FFI_C "flipBuffers" (Ptr -> IO ()) ptr
@@ -30,7 +30,7 @@ flipBuffers (MkSurface ptr)
 
 -- Some drawing primitives
 
-public
+export
 filledRect : SDLSurface -> Int -> Int -> Int -> Int ->
                            Int -> Int -> Int -> Int -> IO ()
 filledRect (MkSurface ptr) x y w h r g b a 
@@ -38,7 +38,7 @@ filledRect (MkSurface ptr) x y w h r g b a
            (Ptr -> Int -> Int -> Int -> Int ->
             Int -> Int -> Int -> Int -> IO ()) ptr x y w h r g b a
 
-public
+export
 filledEllipse : SDLSurface -> Int -> Int -> Int -> Int ->
                               Int -> Int -> Int -> Int -> IO ()
 filledEllipse (MkSurface ptr) x y rx ry r g b a 
@@ -46,7 +46,7 @@ filledEllipse (MkSurface ptr) x y rx ry r g b a
            (Ptr -> Int -> Int -> Int -> Int ->
             Int -> Int -> Int -> Int -> IO ()) ptr x y rx ry r g b a
 
-public
+export
 drawLine : SDLSurface -> Int -> Int -> Int -> Int ->
                          Int -> Int -> Int -> Int -> IO ()
 drawLine (MkSurface ptr) x y ex ey r g b a 
@@ -57,7 +57,7 @@ drawLine (MkSurface ptr) x y ex ey r g b a
 -- TODO: More keys still to add... careful to do the right mappings in
 -- KEY in sdlrun.c
 
-public
+public export
 data Key = KeyUpArrow
          | KeyDownArrow
 	 | KeyLeftArrow
@@ -120,7 +120,7 @@ Eq Key where
   (KeyAny x)    == (KeyAny y)     = x == y
   _             == _              = False
 
-public
+public export
 data Button = Left | Middle | Right | WheelUp | WheelDown
 
 Eq Button where
@@ -131,7 +131,7 @@ Eq Button where
   WheelDown == WheelDown = True
   _ == _ = False
 
-public
+public export
 data Event = KeyDown Key
            | KeyUp Key
            | MouseMotion Int Int Int Int
@@ -152,10 +152,11 @@ Eq Event where
       = b == b' && x == x' && y == y'
   _           == _           = False
 
-public
+public export
 pollEvent : IO (Maybe Event)
 pollEvent 
-    = do MkRaw e <- 
-            foreign FFI_C "pollEvent" (Ptr -> IO (Raw (Maybe Event))) prim__vm
-         return e
+    = do vm <- getMyVM
+         MkRaw e <- 
+            foreign FFI_C "pollEvent" (Ptr -> IO (Raw (Maybe Event))) vm
+         pure e
 

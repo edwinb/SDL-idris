@@ -26,14 +26,14 @@ data Vars = Position -- position of ellipse
 -- generation and console I/O
 
 Prog : Type -> Type -> Type
-Prog i t = Eff IO [SDL i, 
+Prog i t = Eff t [SDL i, 
                    Position ::: STATE (Int, Int), 
                    XMove ::: STATE Int,
                    YMove ::: STATE Int,
                    Frames ::: STATE Integer,
                    Starfield ::: STATE (List (Int, Int)),
                    RND,
-                   STDIO] t
+                   STDIO]
 
 -- Convenient shorthand for initialised SDL
 Running : Type -> Type

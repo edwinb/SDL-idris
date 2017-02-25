@@ -3,6 +3,8 @@ module Effect.SDL
 import Effects
 import public Graphics.SDL
 
+%access public export
+
 Srf : Type
 Srf = SDLSurface
 
@@ -48,9 +50,11 @@ Handler Sdl IO where
      handle s Poll k = do x <- pollEvent; k x s
      handle s (WithSurface f) k = do r <- f s; k r s 
 
+public export
 SDL : Type -> EFFECT
 SDL res = MkEff res Sdl
 
+public export
 SDL_ON : EFFECT
 SDL_ON = SDL SDLSurface
 
@@ -67,7 +71,7 @@ poll : { [SDL_ON] } Eff (Maybe Event)
 poll = call Poll
 
 getSurface : { [SDL_ON] } Eff SDLSurface
-getSurface = call $ WithSurface (\s => return s)
+getSurface = call $ WithSurface (\s => pure s)
 
 rectangle : Colour -> Int -> Int -> Int -> Int -> { [SDL_ON] } Eff () 
 rectangle (MkCol r g b a) x y w h 
