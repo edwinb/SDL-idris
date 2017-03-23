@@ -13,9 +13,11 @@ export
 data SDLSurface = MkSurface Ptr
 
 export
-startSDL : Int -> Int -> IO SDLSurface
+startSDL : Int -> Int -> IO (Maybe SDLSurface)
 startSDL x y = do ptr <- do_startSDL
-		  pure (MkSurface ptr)
+                  if !(nullPtr ptr)
+                     then pure Nothing
+                     else pure (Just (MkSurface ptr))
   where do_startSDL = foreign FFI_C "startSDL" (Int -> Int -> IO Ptr) x y
 
 export

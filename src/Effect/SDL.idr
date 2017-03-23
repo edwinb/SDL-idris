@@ -2,6 +2,7 @@ module Effect.SDL
 
 import Effects
 import public Graphics.SDL
+import System
 
 %access public export
 
@@ -43,7 +44,10 @@ data Sdl : Effect where
      WithSurface : (Srf -> IO a) -> Sdl a Srf (\v => Srf)
 
 Handler Sdl IO where
-     handle () (Initialise x y) k = do srf <- startSDL x y; k () srf
+     handle () (Initialise x y) k = do Just srf <- startSDL x y
+                                            | Nothing => do putStrLn "Can't create window"
+                                                            exit 1
+                                       k () srf
      handle s Quit k = do endSDL; k () ()
 
      handle s Flip k = do flipBuffers s; k () s
