@@ -1,0 +1,31 @@
+<LocalLeader>r reload file
+
+<LocalLeader>t show type
+
+<LocalLeader>d Create an initial clause for a type declaration.
+
+<LocalLeader>b Same as \d but for an initial typeclass method impl.
+
+<LocalLeader>md Same as \d but for a proof clause
+
+<LocalLeader>c case split
+
+<LocalLeader>mc make case
+
+<LocalLeader>w add with clause
+
+<LocalLeader>e evaluate expression
+
+<LocalLeader>l make lemma
+
+<LocalLeader>m add missing clause
+
+<LocalLeader>f refine item
+
+<LocalLeader>o obvious proof search
+
+<LocalLeader>p proof search
+
+<LocalLeader>i open idris response window
+
+<LocalLeader>h show documentation

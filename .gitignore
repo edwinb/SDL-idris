@@ -1,0 +1,20 @@
+# Build artefacts
+*.ibc
+*.o
+*.a
+*.so
+
+# IDE and editors
+*.swp
+*~
+.DS_Store
+.hpc
+*.orig
+*.tix
+*.dSYM
+.projectile
+.dir-locals.el
+.vscode
+.idea
+
+
