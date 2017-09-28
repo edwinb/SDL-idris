@@ -1,7 +1,11 @@
 package sdl
 
 sourcedir = src
-modules = Graphics.SDL, Graphics.Config, Effect.SDL
+modules = Graphics.SDL
+        , Graphics.Config
+        , Effect.SDL
+        , Graphics.Utils
+
 opts = "-p effects" 
 
 makefile = MakefileSDLC

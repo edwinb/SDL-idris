@@ -3,10 +3,12 @@ module Main
 import Graphics.SDL
 
 main : IO ()
-main = do surface <- startSDL 640 480
-          flipBuffers surface
+main = do surfaceM <- startSDL 640 480
+          case surfaceM of
+                Just surface => do flipBuffers surface
+                                   eventLoop surface 0 320 200 0 0
+                _            => pure ()
 
-          eventLoop surface 0 320 200 0 0
   where eventLoop : SDLSurface -> Integer -> Int -> Int -> Int -> Int -> IO ()
         processEvent : SDLSurface -> Integer -> Int -> Int -> Int -> Int -> Maybe Event -> IO ()
 

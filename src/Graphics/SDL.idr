@@ -1,6 +1,7 @@
 module Graphics.SDL
 
 import Graphics.Config
+import Graphics.Utils
 
 %include C "sdlrun.h"
 %include C "SDL/SDL.h"
@@ -21,17 +22,70 @@ startSDL x y = do ptr <- do_startSDL
   where do_startSDL = foreign FFI_C "startSDL" (Int -> Int -> IO Ptr) x y
 
 export
+initSDL : List SDLInitFlag -> IO () 
+initSDL flags = do ret <- sdl_init
+                   when (ret == (the Int (-1))) (printError "SDL_init failed")
+  where sdl_init = foreign FFI_C "SDL_Init" (Bits32 -> IO Int) (sdlInitflagsToBitmap flags) -- bitmap
+
+export
+setVideoMode : Int -> Int -> Int -> List SDLVideoFlag -> IO (Maybe SDLSurface)
+setVideoMode width height bpp flags
+     = do ptr <- do_setVideoMode
+          if !(nullPtr ptr)
+             then pure Nothing
+             else pure (Just (MkSurface ptr)) --(Just (MkSurface prt))
+   where do_setVideoMode = foreign FFI_C "SDL_SetVideoMode" (Int -> Int -> Int -> Bits32 -> IO Ptr) 
+                                                             width height bpp bitmap 
+         where bitmap = sdlVideoFlagsToBitmap flags 
+
+-- export
+-- loadBMP : String -> IO SDLSurface
+-- loadBMP bmpPath = do
+--   surface <- foreign FFI_C "SDL_LoadBMP" (String -> IO Ptr) bmpPath
+--   pure $ MkSurface surface
+
+export
+loadBMP : String -> IO (Maybe SDLSurface)
+loadBMP bmpPath = do surface <- do_sdl_load_bmp
+                     if !(nullPtr surface) 
+                        then pure Nothing 
+                        else pure (Just (MkSurface surface))
+   where do_sdl_load_bmp = foreign FFI_C "SDL_LoadBMP" (String -> IO Ptr) bmpPath
+
+export
 endSDL : IO ()
 endSDL = foreign FFI_C "SDL_Quit" (IO ())
 
 export
-flipBuffers : SDLSurface -> IO ();
+flipBuffers : SDLSurface -> IO ()
 flipBuffers (MkSurface ptr) 
      = foreign FFI_C "flipBuffers" (Ptr -> IO ()) ptr
 
 
--- Some drawing primitives
 
+-- int SDL_UpperBlit(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect);
+-- foreign import ccall unsafe "SDL_UpperBlit" sdlBlitSurface
+--     :: Ptr SurfaceStruct -> Ptr Rect -> Ptr SurfaceStruct -> Ptr Rect -> IO CInt
+export
+blitSurface : SDLSurface -> Ptr -> SDLSurface -> Ptr -> IO () 
+blitSurface (MkSurface src_ptr) src_rect (MkSurface dst_ptr) dst_rect
+     = do ret <- sdl_upper_blit
+          when (ret == (the Int (-1))) (printError "blitSurface failed")
+  where sdl_upper_blit = 
+             foreign FFI_C "SDL_UpperBlit" (Ptr -> Ptr -> Ptr -> Ptr -> IO Int) 
+                                            src_ptr src_rect dst_ptr dst_rect 
+
+
+-- void SDL_FreeSurface(SDL_Surface *surface);
+-- foreign import ccall unsafe "SDL_FreeSurface" sdlFreeSurface :: Ptr SurfaceStruct -> IO ()
+-- | Frees (deletes) a @Surface@. Don\'t use it unless you really know what you're doing. All surfaces
+--   are automatically deleted when they're out of scope or forced with @finalizeForeignPtr@.
+export
+freeSurface : SDLSurface -> IO ()
+freeSurface (MkSurface srf_ptr)
+     = foreign FFI_C "SDL_FreeSurface" (Ptr -> IO ()) srf_ptr
+
+-- Some drawing primitives
 export
 filledRect : SDLSurface -> Int -> Int -> Int -> Int ->
                            Int -> Int -> Int -> Int -> IO ()
@@ -162,3 +216,8 @@ pollEvent
             foreign FFI_C "pollEvent" (Ptr -> IO (Raw (Maybe Event))) vm
          pure e
 
+-- Utils
+public export
+delay : Int -> IO ()
+delay ms = do foreign FFI_C "SDL_Delay" (Bits32 -> IO ()) fromMs 
+   where fromMs = prim__truncInt_B32 ms

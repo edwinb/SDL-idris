@@ -1,0 +1,9 @@
+package st-tut 
+
+sourcedir = ./ 
+modules = 
+opts = "-p contrib -p sdl" 
+makefile = 
+objs = 
+libs = 
+

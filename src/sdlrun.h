@@ -1,6 +1,7 @@
 #ifndef __SDLRUN_H
 #define __SDLRUN_H
 
+#include <SDL/SDL.h>
 #include <idris_rts.h>
 
 // Start SDL, open a window with dimensions (x,y)
