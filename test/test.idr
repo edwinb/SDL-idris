@@ -4,9 +4,11 @@ import Graphics.SDL
 
 main : IO ()
 main = do surface <- startSDL 640 480
-          flipBuffers surface
+          case surface of
+               Nothing => putStrLn "startSDL failed"
+               Just surface => do flipBuffers surface
+                                  eventLoop surface 0 320 200 0 0
 
-          eventLoop surface 0 320 200 0 0
   where eventLoop : SDLSurface -> Integer -> Int -> Int -> Int -> Int -> IO ()
         processEvent : SDLSurface -> Integer -> Int -> Int -> Int -> Int -> Maybe Event -> IO ()
 
@@ -35,7 +37,7 @@ main = do surface <- startSDL 640 480
                 = eventLoop s f x y mx 1
         processEvent s f x y mx my (Just (KeyUp KeyDownArrow)) 
                 = eventLoop s f x y mx 0
-        processEvent s f x y mx my (Just AppQuit) = return ()
+        processEvent s f x y mx my (Just AppQuit) = pure ()
         processEvent s f x y mx my (Just (KeyDown (KeyAny k)))
                 = do print k
                      eventLoop s f x y mx my

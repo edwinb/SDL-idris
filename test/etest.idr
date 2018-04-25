@@ -39,16 +39,16 @@ Prog i t = Eff t [SDL i,
 Running : Type -> Type
 Running t = Prog SDLSurface t
 
-initStarfield : List (Int, Int) -> Int -> Eff m [RND] (List (Int, Int))
-initStarfield acc 0 = return acc
+initStarfield : List (Int, Int) -> Int -> Eff (List (Int, Int)) [RND] 
+initStarfield acc 0 = pure acc
 initStarfield acc n = do x <- rndInt 0 639
                          y <- rndInt 0 479
                          initStarfield ((fromInteger x, fromInteger y) :: acc) (n - 1)
 
-updateStarfield : List (Int, Int) -> Eff m [RND] (List (Int, Int))
+updateStarfield : List (Int, Int) -> Eff (List (Int, Int)) [RND]
 updateStarfield xs = upd [] xs where
-  upd : List (Int, Int) -> List (Int, Int) -> Eff m [RND] (List (Int, Int))
-  upd acc [] = return acc
+  upd : List (Int, Int) -> List (Int, Int) -> Eff (List (Int, Int)) [RND]
+  upd acc [] = pure acc
   upd acc ((x, y) :: xs)
       = if (y > 479) then do
              x <- rndInt 0 639
@@ -56,8 +56,8 @@ updateStarfield xs = upd [] xs where
            else
              upd ((x, y+1) :: acc) xs
 
-drawStarfield : List (Int, Int) -> Eff IO [SDL_ON] ()
-drawStarfield [] = return ()
+drawStarfield : List (Int, Int) -> Eff () [SDL_ON]
+drawStarfield [] = pure ()
 drawStarfield ((x, y) :: xs) = do line white x y x y
                                   drawStarfield xs
 
@@ -73,25 +73,25 @@ emain = do initialise 640 480
            eventLoop
            quit
   where process : Maybe Event -> Running Bool
-        process (Just AppQuit) = return False
+        process (Just AppQuit) = pure False
 
         process (Just (KeyDown KeyLeftArrow))  = do XMove :- put (-1)
-                                                    return True
+                                                    pure True
         process (Just (KeyUp KeyLeftArrow))    = do XMove :- put 0
-                                                    return True
+                                                    pure True
         process (Just (KeyDown KeyRightArrow)) = do XMove :- put 1
-                                                    return True
+                                                    pure True
         process (Just (KeyUp KeyRightArrow))   = do XMove :- put 0
-                                                    return True
+                                                    pure True
         process (Just (KeyDown KeyUpArrow))    = do YMove :- put (-1)
-                                                    return True
+                                                    pure True
         process (Just (KeyUp KeyUpArrow))      = do YMove :- put 0
-                                                    return True
+                                                    pure True
         process (Just (KeyDown KeyDownArrow))  = do YMove :- put 1
-                                                    return True
+                                                    pure True
         process (Just (KeyUp KeyDownArrow))    = do YMove :- put 0
-                                                    return True
-        process _ = return True
+                                                    pure True
+        process _ = pure True
 
         draw : Running ()
         draw = do rectangle black 0 0 640 480
@@ -132,12 +132,10 @@ emain = do initialise 640 480
                        when continue eventLoop
 
 main : IO ()
-main = run [(), Position := (320,200), 
+main = runInit [(), Position := (320,200), 
                 XMove := 0, 
                 YMove := 0, 
                 Frames := 0,
                 Starfield := List.Nil,
                 1234567890,
                 ()] emain
-
-
