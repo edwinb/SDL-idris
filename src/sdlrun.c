@@ -228,7 +228,7 @@ void* pollEvent(VM* vm)
     SDL_Event event; // = (SDL_Event *) GC_MALLOC(sizeof(SDL_Event));
     int r = SDL_PollEvent(&event);
 
-    idris_requireAlloc(128); // Conservative!
+    idris_requireAlloc(vm, 128); // Conservative!
 
     if (r==0) {
         idris_constructor(idris_event, vm, 0, 0, 0); // Nothing
@@ -262,14 +262,14 @@ void* pollEvent(VM* vm)
 	    break;
 	default:
 	    idris_constructor(idris_event, vm, 0, 0, 0); // Nothing
-            idris_doneAlloc();
+            idris_doneAlloc(vm);
             return idris_event;
 	}
         idris_constructor(idris_event, vm, 1, 1, 0);
         idris_setConArg(idris_event, 0, ievent); // Just ievent
     }
 
-    idris_doneAlloc();
+    idris_doneAlloc(vm);
     return idris_event;
 }
 
